@@ -43,14 +43,14 @@ Run:
 
 ```text
 python3 export_records.py measurements.csv evidence/before.csv
-python3 -m unittest -v test_smoke.py
+python3 save_test_results.py evidence/before_tests.txt
 ```
 
-The first command should print `Exported 8 records to evidence/before.csv`. The second should name two tests, mark both `ok`, then end with `Ran 2 tests` and `OK`. The elapsed time can differ. This confirms that the unchanged starter runs. It does not establish that the app meets every requirement.
+The first command should print `Exported 8 records to evidence/before.csv`. The test command writes its actual results into `evidence/before_tests.txt` as well as showing them in the terminal. The second should name three tests, mark each `ok`, then end with `Ran 3 tests` and `OK`. The elapsed time can differ. This confirms that the unchanged starter runs. It does not establish that the app meets every requirement.
 
-Open `evidence/before.csv` in a text editor to see what the app wrote. Keep that file. Copy the terminal's test results into `evidence/before_tests.txt` with your text editor. Use a text editor rather than a spreadsheet when you need to see the exact characters in a CSV file.
+Open `evidence/before.csv` in a text editor to see what the app wrote. Keep that file. Then run `python3 summary_readings.py measurements.csv`. It should show `Records: 8`, `Lowest reading: -2.250` and `Highest reading: 100.010`. Copy these three lines into `evidence/before_summary.txt` with your text editor. Use a text editor rather than a spreadsheet when you need to see the exact characters in a CSV file.
 
-If you see **can't open file**, list the files in the current folder and follow the wrong folder recovery above. If you see **No such file or directory** or **FileNotFoundError**, check the input filename and confirm that `evidence` exists. If an output file is open elsewhere, close it before retrying. If a command is missing, repeat the Python version check and use the command that works. Rerun the unchanged baseline before editing the app.
+If you see **can't open file**, list the files in the current folder and follow the wrong folder recovery above. If you see **No such file or directory** or **FileNotFoundError**, check the input filename and confirm that `evidence` exists. If an output file is open elsewhere, close it before retrying. If a command is missing, repeat the Python version check and use the command that works. Rerun the unchanged baseline before editing the app. If the evidence saver says a file already exists, use a new filename so you keep the earlier result. After adding tests and again after the repair, run it with new names such as `evidence/original_checks.txt` and `evidence/after_tests.txt`. It finds every `test*.py` file in this folder. A failed test still produces a saved transcript and a nonzero exit code, which tells the terminal the checks failed.
 
 ## 5. Try the small CSV example
 
@@ -84,23 +84,30 @@ Read `example_csv.py` beside `example_queue.csv`. This separate example gives yo
 
 The example uses only Python's standard library, which comes with Python. You do not need to install packages.
 
-## 6. Check the export requirements
+## 6. Keep a local record with Git
 
-Valid input has a header with `record_id`, `position` and `reading`. The `label` column is optional. Identifiers are unique text. Positions are positive whole numbers. Readings are decimal text with an optional sign, up to six digits before the decimal point and up to four after it. Labels may contain spaces, commas or quotation marks. All measurements use the same unit. Handling invalid input and converting units are outside this project.
+Git records which files changed. You do not need an account or a remote repository. First run `git --version`. If the command is missing, install Git from [its official downloads page](https://git-scm.com/downloads). On Linux you can also use your system's software manager. Reopen the terminal in the starter folder and check again.
 
-- Keep every record exactly once.
-- Keep each identifier, reading and supplied label exactly as written in the input.
-- Sort by position as a whole number, from smallest to largest. Keep input order for equal positions.
-- Write `record_id,position,reading,label` in that order. Write positions as whole numbers.
-- Write an empty label when its cell is empty or the label column is absent.
-- Write a header even when there are no records.
+If you downloaded the ZIP, run these commands before editing code:
 
-Add your own automated tests. Use the requirements to choose expected results. The supplied tests check basic operation only. You can ask an AI assistant to explain code or suggest changes, but check its suggestions yourself.
+```text
+git init
+git config user.name "Learner"
+git config user.email "learner@example.invalid"
+git add .
+git commit -m "Save unchanged starter and baseline"
+```
+
+These name and email settings apply only to this folder. You may replace them with the identity you want to show with your work. If Git says **Author identity unknown**, run the two configuration commands again and retry the commit. If Git says **not a git repository**, list the files and return to the starter folder before running `git init`.
+
+After repairing and checking the app, run `git diff` to inspect changes. Then run `git add .`, followed by `git commit -m "Repair export and add regression checks"`. Run `git log -1 --oneline` and copy that commit reference into your repair note. Include the diff of your repair commit, which you can save by running `git show --format=fuller > evidence/repair.diff`. Keep the local `.git` folder with your working copy. You can hand over a ZIP of the final files plus this diff without sharing the hidden folder.
+
+## Requirements and hand-in
+
+Use the requirements on the project page when choosing expected results. The file `summary_readings.py` is also part of the starter. The reviewer already uses it to see the record count and the lowest and highest readings as numbers, rounded to three decimal places. Keep that behaviour while repairing the export. For an empty file it prints `Records: 0` and `No readings.` instead of a numeric range. In its code, `min` chooses the smallest value and `max` chooses the largest. The format `:.3f` displays a number with three decimal places. The command handling and summary display are already set up, so you can focus on the repair.
+
+Add your own automated tests. An AI assistant may explain code or suggest changes. You choose the repair and check its effect on both programs.
 
 ## About this data
 
 The eight measurement records were made for this project. They contain no readings from real equipment or people. The queue example was also made for this project and has no real tickets. These files support code checks but cannot show equipment performance or real waiting times.
-
-## Share your work
-
-Keep the licence with your corrected source. Share your tests, actual before and after exports, test results and repair note on a public page or repository. Check that each file opens without signing in. Explain what you changed, one alternative and what your evidence supports. Start with the task and result so a reader can understand the work in two minutes.
