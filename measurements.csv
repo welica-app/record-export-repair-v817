@@ -1,0 +1,9 @@
+record_id,position,reading,label
+rec-410,4,2.500,Cooling room
+0008,2,+1.20,007
+rec-405,10,-0.000,
+rec-407,2,0.000,"Bench, north"
+rec-408,1,13.750,"Air ""A"""
+rec-409,12,-2.250,Storage room
+rec-411,3,100.010,
+rec-412,11,4.500,Test room
