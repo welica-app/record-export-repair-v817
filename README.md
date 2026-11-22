@@ -37,7 +37,7 @@ The commands below use `python3`. Replace **only** `python3` with the command th
 
 ## 4. Run the unchanged app first
 
-Create a folder for evidence by running `mkdir evidence`. If it already exists, keep its contents and choose unused output filenames. The output must be different from the input. The app replaces an existing output file, so do not reuse an evidence filename you want to keep.
+Create a folder for evidence by running `mkdir evidence`. If it already exists, keep the files inside it. The output must be different from the input. The app replaces an existing output file, so do not reuse an evidence filename you want to keep.
 
 Run:
 
@@ -48,9 +48,27 @@ python3 save_test_results.py evidence/before_tests.txt
 
 The first command should print `Exported 8 records to evidence/before.csv`. The test command writes its actual results into `evidence/before_tests.txt` as well as showing them in the terminal. The second should name three tests, mark each `ok`, then end with `Ran 3 tests` and `OK`. The elapsed time can differ. This confirms that the unchanged starter runs. It does not establish that the app meets every requirement.
 
-Open `evidence/before.csv` in a text editor to see what the app wrote. Keep that file. Then run `python3 summary_readings.py measurements.csv`. It should show `Records: 8`, `Lowest reading: -2.250` and `Highest reading: 100.010`. Copy these three lines into `evidence/before_summary.txt` with your text editor. Use a text editor rather than a spreadsheet when you need to see the exact characters in a CSV file.
+Open `evidence/before.csv` in a text editor to see what the app wrote. Keep that file. A text editor shows the file exactly as it is stored. So you see the quote marks CSV uses to store a cell, as well as the cell's text. When you compare a cell with the same cell in `measurements.csv`, compare what the cell holds. First leave out any quote marks around the whole cell. Then read each pair of quote marks inside the cell as one quote mark. Then run `python3 summary_readings.py measurements.csv`. It should show `Records: 8`, `Lowest reading: -2.250` and `Highest reading: 100.010`. Copy these three lines into `evidence/before_summary.txt` with your text editor. Use a text editor rather than a spreadsheet when you need to see the exact characters in a CSV file.
 
-If you see **can't open file**, list the files in the current folder and follow the wrong folder recovery above. If you see **No such file or directory** or **FileNotFoundError**, check the input filename and confirm that `evidence` exists. If an output file is open elsewhere, close it before retrying. If a command is missing, repeat the Python version check and use the command that works. Rerun the unchanged baseline before editing the app. If the evidence saver says a file already exists, use a new filename so you keep the earlier result. After adding tests and again after the repair, run it with new names such as `evidence/original_checks.txt` and `evidence/after_tests.txt`. It finds every `test*.py` file in this folder. A failed test still produces a saved transcript and a nonzero exit code, which tells the terminal the checks failed.
+If you see **can't open file**, list the files in the current folder and follow the wrong folder recovery above. If you see **No such file or directory** or **FileNotFoundError**, check the input filename and confirm that `evidence` exists. If an output file is open elsewhere, close it before retrying. If a command is missing, repeat the Python version check and use the command that works. Rerun the unchanged baseline before editing the app. If the evidence saver says a file already exists, move that file to an unused name, such as `evidence/after_tests_attempt1.txt`. Then run the same command again.
+
+Name each new test file in the form `test_*.py`, such as `test_export.py`. Use only letters, numbers and underscores in the name. The evidence saver uses Python's test discovery to find the test files in this folder. Test discovery can skip a name such as `test-export.py`, and then the tests in that file never run.
+
+Add your tests before you change `export_records.py`. Then run them on the unchanged code:
+
+```text
+python3 save_test_results.py evidence/original_checks.txt
+```
+
+After the repair, run them on the repaired code:
+
+```text
+python3 save_test_results.py evidence/after_tests.txt
+```
+
+Open both files and find every one of your final new tests by name. In `evidence/original_checks.txt`, a new test should fail, and the reason it gives should be the fault you expected. In `evidence/after_tests.txt`, the same test should pass. A failed test still produces a saved transcript and a nonzero exit code, which tells the terminal the checks failed.
+
+If you change a test or its input after a run, repeat both checks as the project milestones describe. Run the unchanged check in a fresh copy of the starter, such as one you extract again from the ZIP, with your final tests and inputs added. Run the repaired check in your working folder. Before you hand in, both transcripts must come from your final tests and inputs.
 
 ## 5. Try the small CSV example
 
@@ -100,13 +118,30 @@ git commit -m "Save unchanged starter and baseline"
 
 These name and email settings apply only to this folder. You may replace them with the identity you want to show with your work. If Git says **Author identity unknown**, run the two configuration commands again and retry the commit. If Git says **not a git repository**, list the files and return to the starter folder before running `git init`.
 
-After repairing and checking the app, run `git diff` to inspect changes. Then run `git add .`, followed by `git commit -m "Repair export and add regression checks"`. Run `git log -1 --oneline` and copy that commit reference into your repair note. Include the diff of your repair commit, which you can save by running `git show --format=fuller > evidence/repair.diff`. Keep the local `.git` folder with your working copy. You can hand over a ZIP of the final files plus this diff without sharing the hidden folder.
+After repairing and checking the app, run these commands one at a time:
+
+```text
+git status
+git diff
+git add export_records.py test_export.py
+git diff --staged
+```
+
+`git status` lists the files that changed or are new. `git diff` shows the changed lines in files Git already records. The `git add` line is an example. Use the names of your repaired code, your test files and any small test input files you intend to commit. `git diff --staged` shows what the commit will hold. Look for your new test in it. If it is missing, add that file and run `git diff --staged` again. Then run:
+
+```text
+git commit -m "Repair export and add regression checks"
+```
+
+Run `git log -1 --oneline` and copy that commit reference into your repair note. Include the diff of your repair commit, which you can save by running `git show --format=fuller > evidence/repair.diff`. Keep the local `.git` folder with your working copy. You can hand over a ZIP of the final files plus this diff without sharing the hidden folder.
 
 ## Requirements and hand-in
 
 Use the requirements on the project page when choosing expected results. The file `summary_readings.py` is also part of the starter. The reviewer already uses it to see the record count and the lowest and highest readings as numbers, rounded to three decimal places. Keep that behaviour while repairing the export. For an empty file it prints `Records: 0` and `No readings.` instead of a numeric range. In its code, `min` chooses the smallest value and `max` chooses the largest. The format `:.3f` displays a number with three decimal places. The command handling and summary display are already set up, so you can focus on the repair.
 
 Add your own automated tests. An AI assistant may explain code or suggest changes. You choose the repair and check its effect on both programs.
+
+To hand in, make a ZIP that holds everything in the list under "What to hand in" on the project page. Include `measurements.csv` and `save_test_results.py`, so a reviewer can run your checks again. Your repair note compares all eight records by `record_id` across `measurements.csv`, `evidence/before.csv` and `evidence/after.csv`. Leave earlier transcript attempts out of the ZIP.
 
 ## About this data
 
